@@ -3,43 +3,43 @@ using namespace std;
 struct processus
 {
   int id;
-  int priorite;
-  processus *suiv;
-  char etat;
+  int priority;
+  char state;
+  processus *next;
 };
-void insertDebut(processus *&debut, int x, int y, char z)
+void insertDebut(processus *&head, int x, int y, char z)
 {
   processus *nouv = new processus;
   nouv->id = x;
-  nouv->priorite = y;
-  nouv->suiv = debut;
-  nouv->etat = z;
-  debut = nouv;
+  nouv->priority = y;
+  nouv->next = head;
+  nouv->state = z;
+  head = nouv;
 }
-void insertFin(processus *&debut, int x, int y, char z)
+void insertFin(processus *&head, int x, int y, char z)
 {
-  if (debut == 0)
+  if (head == 0)
   {
-    insertDebut(debut, x, y, z);
+    insertDebut(head, x, y, z);
   }
   else
   {
-    processus *courant = debut;
-    while (courant->suiv != 0)
+    processus *current = head;
+    while (current->next != 0)
     {
-      courant = courant->suiv;
+      current = current->next;
     }
-    courant->suiv = new processus;
-    courant->suiv->id = x;
-    courant->suiv->priorite = y;
-    courant->suiv->etat = z;
-    courant->suiv->suiv = 0;
+    current->next = new processus;
+    current->next->id = x;
+    current->next->priority = y;
+    current->next->state = z;
+    current->next->next = 0;
   }
 }
 void creation(processus *&D, int n)
 {
   int x, y;
-  char etat;
+  char state;
   for (int i = 0; i < n; i++)
   {
     cout << "Enter Id[" << i + 1 << "] =";
@@ -47,167 +47,131 @@ void creation(processus *&D, int n)
     cout << "Enter priority[" << i + 1 << "] =";
     cin >> y;
     cout << "Enter state e for in execution, p for pending and f for finished[" << i + 1 << "] =";
-    cin >> etat;
+    cin >> state;
 
-    while (etat != 'e' && etat != 'p' && etat != 'f')
+    while (state != 'E' && state != 'P' && state != 'F')
     {
-      if (etat == 'e' && etat == 'p' && etat == 'f')
-      {
-        cout << "break\n";
-
-        break;
-      }
-      else
-      {
         cout << "\t\t\tERROR \ne for in execution,p for pending,f for finished\n ";
         cout << "Enter state [" << i + 1 << "] =";
-        cin >> etat;
-      }
+        cin >> state;
     }
 
-    insertFin(D, x, y, etat);
+    insertFin(D, x, y, state);
     cout << endl;
   }
 }
 void afficher(processus *&D)
 {
-  processus *courant = D;
-  if (courant == 0)
+  processus *current = D;
+  if (current == 0)
     cout << "*----------Empty list----------*\n";
   else
-    while (courant != 0)
+    while (current != 0)
     {
-      cout << "Id={" << courant->id << "}\t";
-      cout << "priority={" << courant->priorite << "}\t";
-      cout << "state={" << courant->etat << "}\t";
+      cout << "Id={" << current->id << "}\t";
+      cout << "priority={" << current->priority << "}\t";
+      cout << "state={" << current->state << "}\t";
       cout << "\n";
-      courant = courant->suiv;
+      current = current->next;
     }
 }
-void maxprio(processus *&debut)
-{
-  processus *courant = debut;
-  processus *max = debut;
-  processus *pred;
-
-  do
-  {
-    if (courant->priorite > max->priorite)
-    {
-      max = courant;
-    }
-
-    courant = courant->suiv;
-
-  } while (courant != 0);
-
-  if (max != debut)
-  {
-    courant = debut;
-    pred = debut;
-
-    while (courant->suiv != 0)
-    {
-      if (courant->suiv == max)
-      {
-        pred = courant;
-        break;
-      }
-      else
-      {
-        courant = courant->suiv;
-      }
-    }
-
-    // linking the previous processus of next one;
-    pred->suiv = max->suiv;
-
-    // linking the node with the head;
-    max->suiv = debut;
-
-    // puting the node as the new head;
-    debut = max;
-  }
-}
-void supprimer(processus *&debut)
+void supprimer(processus *&head)
 {
   processus *sup;
-  while (debut != 0)
+  while (head != 0)
   {
-    sup = debut;
-    debut = debut->suiv;
+    sup = head;
+    head = head->next;
     delete sup;
   }
 }
 void InverserList(processus *&D)
 {
-  processus *courant = D;
+  processus *current = D;
   processus *l = 0;
-  while (courant != 0)
+  while (current != 0)
   {
-    insertDebut(l, courant->id, courant->priorite, courant->etat);
-    courant = courant->suiv;
+    insertDebut(l, current->id, current->priority, current->state);
+    current = current->next;
   }
   supprimer(D);
   D = l;
 }
-void suppVal(processus *&D, int val)
-{
-  processus *courant;
-  processus *pred;
-  if (D != 0 && D->priorite == val)
-  {
-    courant = D;
-    D = D->suiv;
-    delete courant;
-    courant = 0;
-    return;
-  }
-  courant = D;
-  pred = courant;
-  while (courant != 0)
-  {
-    if (courant->priorite == val)
-    {
-      pred->suiv = courant->suiv;
-      delete courant;
-      courant = 0;
-    }
-    else
-    {
-      pred = courant;
-      courant = courant->suiv;
-    }
-  }
-}
-void suppetatT(processus *&D)
-{
-  processus *courant;
-  processus *pred;
-  processus *tete;
-  courant = D;
-  tete = D;
 
-  while (courant != 0)
-  {
+void maxprio(processus *&head)
+{
+  processus *current = head;
+  processus *max = head;
+  processus *pred;
 
-    if (courant->etat == 'f')
+  do
+  {
+    if (current->priority > max->priority)
     {
-      if (courant == tete)
+      max = current;
+    }
+
+    current = coucurrentrant->next;
+
+  } while (current != 0);
+
+  if (max != head)
+  {
+    current = head;
+    pred = head;
+
+    while (current->next != 0)
+    {
+      if (current->next == max)
       {
-        tete = tete->suiv;
-        courant = courant->suiv;
+        pred = current;
+        break;
       }
       else
       {
-        pred->suiv = courant->suiv;
-        courant = courant->suiv;
+        current = current->next;
+      }
+    }
+
+    // linking the previous processus of next one;
+    pred->next = max->next;
+
+    // linking the node with the head;
+    max->next = head;
+
+    // puting the node as the new head;
+    head = max;
+  }
+}
+
+void suppetatT(processus *&D)
+{
+  processus *current;
+  processus *pred;
+  processus *tete;
+  current = D;
+  tete = D;
+
+  while (current != 0)
+  {
+
+    if (current->state == 'f')
+    {
+      if (current == tete)
+      {
+        tete = tete->next;
+        current = current->next;
+      }
+      else
+      {
+        pred->next = current->next;
+        current = current->next;
       }
     }
     else
     {
-      pred = courant;
-      courant = courant->suiv;
+      pred = current;
+      current = current->next;
     }
   }
   D = tete;
