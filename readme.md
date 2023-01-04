@@ -2,7 +2,7 @@
 
 Reading this report you would find **algorithms** solving a modified version of a problem mentioned in the fifth exercise, the **steps** for implementing them and the **logic** behind them.
 
-### Preparation de strecture `Processus`
+### Preparation de structure `Processus`
 
 ```
 struct  processus {
